@@ -1,7 +1,6 @@
 package com.padcmyanmar.padcx.padc_x_recyclerview_ypst.activities
 
 import android.os.Bundle
-import android.view.View
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.padcmyanmar.padcx.padc_x_recyclerview_ypst.R
@@ -19,7 +18,7 @@ class MainActivity : BaseActivity(), MainView {
 
     private lateinit var mAdapter: NewsListAdapter
 
-    private lateinit var viewPodEmpty: EmptyViewPod
+    private lateinit var mViewPodEmpty: EmptyViewPod
 
     private lateinit var mPresenter: MainPresenter
 
@@ -29,11 +28,18 @@ class MainActivity : BaseActivity(), MainView {
 
         setUpPresenter()
 
-        hideEmptyView()
+//        hideEmptyView()
         setUpSwipeRefresh()
-        setUpRecyclerView()
         setUpViewPod()
+        setUpRecyclerView()
+        setUpListener()
         mPresenter.onUiReady(this)
+    }
+
+    private fun setUpListener(){
+        btnNavigate.setOnClickListener {
+            startActivity(ModifyCustomViewActivity.newIntent(this))
+        }
     }
 
     override fun displayNewsList(newsList: List<NewsVO>) {
@@ -44,9 +50,11 @@ class MainActivity : BaseActivity(), MainView {
         startActivity(NewsDetailActivity.newItent(this, newsId))
     }
 
+/*
     override fun displayEmptyView() {
         showEmptyView()
     }
+*/
 
     override fun enableSwipeRefresh() {
         swipeRefreshLayout.isRefreshing = true
@@ -62,8 +70,9 @@ class MainActivity : BaseActivity(), MainView {
     }
 
     private fun setUpViewPod() {
-        viewPodEmpty = vpEmpty as EmptyViewPod
-        viewPodEmpty.setEmptyData(EM_NO_NEWS_AVAILABLE, EMPTY_IMAGE_URL)
+        mViewPodEmpty = vpEmpty as EmptyViewPod
+        mViewPodEmpty.setEmptyData(EM_NO_NEWS_AVAILABLE, EMPTY_IMAGE_URL)
+        mViewPodEmpty.setDelegate(mPresenter)
     }
 
     private fun setUpSwipeRefresh() {
@@ -77,14 +86,16 @@ class MainActivity : BaseActivity(), MainView {
         val linearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         rvNews.layoutManager = linearLayoutManager
         rvNews.adapter = mAdapter
+
+        rvNews.setEmptyView(mViewPodEmpty)
     }
 
-    private fun showEmptyView() {
+/*    private fun showEmptyView() {
         vpEmpty.visibility = View.VISIBLE
     }
 
     private fun hideEmptyView() {
         vpEmpty.visibility = View.GONE
-    }
+    }*/
 
 }
